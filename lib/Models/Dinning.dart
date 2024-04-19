@@ -9,18 +9,18 @@ class Dinning {
   Dinning.fromJson(Map<String, dynamic> json) {
     status = json['Status'];
     responseMessage = json['ResponseMessage'];
-    data = json['Data'] != null ? new Data.fromJson(json['Data']) : null;
+    data = json['Data'] != null ? Data.fromJson(json['Data']) : null;
     message = json['Message'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['Status'] = this.status;
-    data['ResponseMessage'] = this.responseMessage;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['Status'] = status;
+    data['ResponseMessage'] = responseMessage;
     if (this.data != null) {
       data['Data'] = this.data!.toJson();
     }
-    data['Message'] = this.message;
+    data['Message'] = message;
     return data;
   }
 }
@@ -32,6 +32,7 @@ class Data {
   List<ExtraAddOn>? extraAddOn;
   List<Tables>? tables;
   List<Voucher>? voucher;
+  List<OrderList>? orderlist;
 
   Data(
       {this.sQLMessage,
@@ -39,71 +40,83 @@ class Data {
         this.items,
         this.extraAddOn,
         this.tables,
-        this.voucher});
+        this.voucher,
+       required this.orderlist
+      });
 
   Data.fromJson(Map<String, dynamic> json) {
     sQLMessage = json['SQLMessage'] != null
-        ? new SQLMessage.fromJson(json['SQLMessage'])
+        ? SQLMessage.fromJson(json['SQLMessage'])
         : null;
     if (json['Category'] != null) {
       category = <Category>[];
       json['Category'].forEach((v) {
-        category!.add(new Category.fromJson(v));
+        category!.add(Category.fromJson(v));
       });
     }
     if (json['Items'] != null) {
       items = <Items>[];
       json['Items'].forEach((v) {
-        items!.add(new Items.fromJson(v));
+        items!.add(Items.fromJson(v));
       });
     }
     if (json['ExtraAddOn'] != null) {
       extraAddOn = <ExtraAddOn>[];
       json['ExtraAddOn'].forEach((v) {
-        extraAddOn!.add(new ExtraAddOn.fromJson(v));
+        extraAddOn!.add(ExtraAddOn.fromJson(v));
       });
     }
     if (json['Tables'] != null) {
       tables = <Tables>[];
       json['Tables'].forEach((v) {
-        tables!.add(new Tables.fromJson(v));
+        tables!.add(Tables.fromJson(v));
       });
     }
 
     if (json['Voucher'] != null) {
       voucher = <Voucher>[];
       json['Voucher'].forEach((v) {
-        voucher!.add(new Voucher.fromJson(v));
+        voucher!.add(Voucher.fromJson(v));
       });
     }
+    if (json['OrderList'] != null) {
+      orderlist = <OrderList>[];
+      json['OrderList'].forEach((v) {
+        orderlist!.add(OrderList.fromJson(v)); // Add data to the list
+      });
+    }
+
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.sQLMessage != null) {
-      data['SQLMessage'] = this.sQLMessage!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (sQLMessage != null) {
+      data['SQLMessage'] = sQLMessage!.toJson();
     }
-    if (this.category != null) {
-      data['Category'] = this.category!.map((v) => v.toJson()).toList();
+    if (category != null) {
+      data['Category'] = category!.map((v) => v.toJson()).toList();
     }
-    if (this.items != null) {
-      data['Items'] = this.items!.map((v) => v.toJson()).toList();
+    if (items != null) {
+      data['Items'] = items!.map((v) => v.toJson()).toList();
     }
-    if (this.extraAddOn != null) {
-      data['ExtraAddOn'] = this.extraAddOn!.map((v) => v.toJson()).toList();
+    if (extraAddOn != null) {
+      data['ExtraAddOn'] = extraAddOn!.map((v) => v.toJson()).toList();
     }
-    if (this.tables != null) {
-      data['Tables'] = this.tables!.map((v) => v.toJson()).toList();
+    if (tables != null) {
+      data['Tables'] = tables!.map((v) => v.toJson()).toList();
     }
-    if (this.voucher != null) {
-      data['Voucher'] = this.voucher!.map((v) => v.toJson()).toList();
+    if (voucher != null) {
+      data['Voucher'] = voucher!.map((v) => v.toJson()).toList();
+    }
+    if (orderlist != null) {
+      data['OrderList'] = orderlist!.map((v) => v.toJson()).toList();
     }
     return data;
   }
 }
 
 class SQLMessage {
-  Null? level;
+  void level;
   String? status;
   String? code;
   String? message;
@@ -118,11 +131,11 @@ class SQLMessage {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['Level'] = this.level;
-    data['Status'] = this.status;
-    data['Code'] = this.code;
-    data['Message'] = this.message;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    // data['Level'] = level;
+    data['Status'] = status;
+    data['Code'] = code;
+    data['Message'] = message;
     return data;
   }
 }
@@ -139,9 +152,9 @@ class Category {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['CatId'] = this.catId;
-    data['CatName'] = this.catName;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['CatId'] = catId;
+    data['CatName'] = catName;
     return data;
   }
 }
@@ -165,12 +178,12 @@ class Items {
 
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['ItemId'] = this.itemId;
-    data['CatId'] = this.catId;
-    data['Name'] = this.name;
-    data['SRate'] = this.sRate;
-    data['Printer'] = this.printer;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['ItemId'] = itemId;
+    data['CatId'] = catId;
+    data['Name'] = name;
+    data['SRate'] = sRate;
+    data['Printer'] = printer;
     return data;
   }
 }
@@ -193,12 +206,12 @@ class ExtraAddOn {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['ItemId'] = this.itemId;
-    data['CatId'] = this.catId;
-    data['Name'] = this.name;
-    data['SRate'] = this.sRate;
-    data['Printer'] = this.printer;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['ItemId'] = itemId;
+    data['CatId'] = catId;
+    data['Name'] = name;
+    data['SRate'] = sRate;
+    data['Printer'] = printer;
     return data;
   }
 }
@@ -208,10 +221,15 @@ class Tables {
   String? tableName;
   int? chair;
   String? guest;
-  String? tableStatus;
+  String? tableStatus;// Add this line
 
-  Tables(
-      {this.tableId, this.tableName, this.chair, this.guest, this.tableStatus});
+  Tables({
+    this.tableId,
+    this.tableName,
+    this.chair,
+    this.guest,
+    this.tableStatus,
+  });
 
   Tables.fromJson(Map<String, dynamic> json) {
     tableId = json['TableId'];
@@ -222,14 +240,13 @@ class Tables {
     chair = chair ?? 0;
   }
 
-
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['TableId'] = this.tableId;
-    data['TableName'] = this.tableName;
-    data['Chair'] = this.chair;
-    data['Guest'] = this.guest;
-    data['TableStatus'] = this.tableStatus;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['TableId'] = tableId;
+    data['TableName'] = tableName;
+    data['Chair'] = chair;
+    data['Guest'] = guest;
+    data['TableStatus'] = tableStatus;
     return data;
   }
 }
@@ -239,7 +256,7 @@ class Voucher {
   String? ledgerName;
   int? tax;
   int? cashDisc;
-  Null? selected;
+  void selected;
 
   Voucher(
       {
@@ -254,12 +271,70 @@ class Voucher {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['LedId'] = this.ledId;
-    data['LedgerName'] = this.ledgerName;
-    data['Tax'] = this.tax;
-    data['CashDisc'] = this.cashDisc;
-    data['Selected'] = this.selected;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['LedId'] = ledId;
+    data['LedgerName'] = ledgerName;
+    data['Tax'] = tax;
+    data['CashDisc'] = cashDisc;
+    // data['Selected'] = selected;
     return data;
   }
 }
+class OrderList {
+  int? id;
+  String? guest;
+  String? chairIdList;
+  int? tableId;
+  String? tableName;
+  int? issueCode;
+  String? vNo;
+  String? ledcodeCr;
+  double? amt;
+  String? issueDate;
+  String? timeAgo;
+
+  OrderList({
+    this.id,
+    this.guest,
+    this.chairIdList,
+    this.tableId,
+    this.tableName,
+    this.issueCode,
+    this.vNo,
+    this.ledcodeCr,
+    this.amt,
+    this.issueDate,
+    this.timeAgo,
+  });
+
+  OrderList.fromJson(Map<String, dynamic> json) {
+    id = json['Id'];
+    guest = json['Guest'];
+    chairIdList = json['ChairIdList'];
+    tableId = json['TableId'];
+    tableName = json['TableName'];
+    issueCode = json['IssueCode'];
+    vNo = json['VNo'];
+    ledcodeCr = json['LedcodeCr'];
+    amt = json['Amt'];
+    issueDate = json['IssueDate'];
+    timeAgo = json['TimeAgo'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['Id'] = id;
+    data['Guest'] = guest;
+    data['ChairIdList'] = chairIdList;
+    data['TableId'] = tableId;
+    data['TableName'] = tableName;
+    data['IssueCode'] = issueCode;
+    data['VNo'] = vNo;
+    data['LedcodeCr'] = ledcodeCr;
+    data['Amt'] = amt;
+    data['IssueDate'] = issueDate;
+    data['TimeAgo'] = timeAgo;
+    return data;
+  }
+}
+

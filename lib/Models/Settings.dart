@@ -9,18 +9,18 @@ class Settings {
   Settings.fromJson(Map<String, dynamic> json) {
     status = json['Status'];
     responseMessage = json['ResponseMessage'];
-    data = json['Data'] != null ? new Data.fromJson(json['Data']) : null;
+    data = json['Data'] != null ? Data.fromJson(json['Data']) : null;
     message = json['Message'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['Status'] = this.status;
-    data['ResponseMessage'] = this.responseMessage;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['Status'] = status;
+    data['ResponseMessage'] = responseMessage;
     if (this.data != null) {
       data['Data'] = this.data!.toJson();
     }
-    data['Message'] = this.message;
+    data['Message'] = message;
     return data;
   }
 }
@@ -43,68 +43,68 @@ class Data {
 
   Data.fromJson(Map<String, dynamic> json) {
     sQLMessage = json['SQLMessage'] != null
-        ? new SQLMessage.fromJson(json['SQLMessage'])
+        ? SQLMessage.fromJson(json['SQLMessage'])
         : null;
     if (json['TableClass'] != null) {
       tableClass = <TableClass>[];
       json['TableClass'].forEach((v) {
-        tableClass!.add(new TableClass.fromJson(v));
+        tableClass!.add(TableClass.fromJson(v));
       });
     }
     if (json['KOTVoucher'] != null) {
       kOTVoucher = <KOTVoucher>[];
       json['KOTVoucher'].forEach((v) {
-        kOTVoucher!.add(new KOTVoucher.fromJson(v));
+        kOTVoucher!.add(KOTVoucher.fromJson(v));
       });
     }
     if (json['TAVoucher'] != null) {
       tAVoucher = <TAVoucher>[];
       json['TAVoucher'].forEach((v) {
-        tAVoucher!.add(new TAVoucher.fromJson(v));
+        tAVoucher!.add(TAVoucher.fromJson(v));
       });
     }
     if (json['PrintArea'] != null) {
       printArea = <PrintArea>[];
       json['PrintArea'].forEach((v) {
-        printArea!.add(new PrintArea.fromJson(v));
+        printArea!.add(PrintArea.fromJson(v));
       });
     }
     if (json['SavedSettings'] != null) {
       savedSettings = <SavedSettings>[];
       json['SavedSettings'].forEach((v) {
-        savedSettings!.add(new SavedSettings.fromJson(v));
+        savedSettings!.add(SavedSettings.fromJson(v));
       });
     }
   }
 
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.sQLMessage != null) {
-      data['SQLMessage'] = this.sQLMessage!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (sQLMessage != null) {
+      data['SQLMessage'] = sQLMessage!.toJson();
     }
-    if (this.tableClass != null) {
-      data['TableClass'] = this.tableClass!.map((v) => v.toJson()).toList();
+    if (tableClass != null) {
+      data['TableClass'] = tableClass!.map((v) => v.toJson()).toList();
     }
-    if (this.kOTVoucher != null) {
-      data['KOTVoucher'] = this.kOTVoucher!.map((v) => v.toJson()).toList();
+    if (kOTVoucher != null) {
+      data['KOTVoucher'] = kOTVoucher!.map((v) => v.toJson()).toList();
     }
-    if (this.tAVoucher != null) {
-      data['TAVoucher'] = this.tAVoucher!.map((v) => v.toJson()).toList();
+    if (tAVoucher != null) {
+      data['TAVoucher'] = tAVoucher!.map((v) => v.toJson()).toList();
     }
-    if (this.printArea != null) {
-      data['PrintArea'] = this.printArea!.map((v) => v.toJson()).toList();
+    if (printArea != null) {
+      data['PrintArea'] = printArea!.map((v) => v.toJson()).toList();
     }
-    if (this.savedSettings != null) {
+    if (savedSettings != null) {
       data['SavedSettings'] =
-          this.savedSettings!.map((v) => v.toJson()).toList();
+          savedSettings!.map((v) => v.toJson()).toList();
     }
     return data;
   }
 }
 
 class SQLMessage {
-  Null? level;
+  void level;
   String? status;
   String? code;
   String? message;
@@ -119,18 +119,18 @@ class SQLMessage {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['Level'] = this.level;
-    data['Status'] = this.status;
-    data['Code'] = this.code;
-    data['Message'] = this.message;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    // data['Level'] = level;
+    data['Status'] = status;
+    data['Code'] = code;
+    data['Message'] = message;
     return data;
   }
 }
 
 class TableClass {
   String? className;
-  Null? description;
+  void description;
   String? selected;
 
   TableClass({this.className, this.description, this.selected});
@@ -142,10 +142,10 @@ class TableClass {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['ClassName'] = this.className;
-    data['Description'] = this.description;
-    data['Selected'] = this.selected;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['ClassName'] = className;
+    // data['Description'] = description;
+    data['Selected'] = selected;
     return data;
   }
 }
@@ -169,12 +169,12 @@ class KOTVoucher {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['LedId'] = this.ledId;
-    data['LedgerName'] = this.ledgerName;
-    data['Tax'] = this.tax;
-    data['CashDisc'] = this.cashDisc;
-    data['Selected'] = this.selected;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['LedId'] = ledId;
+    data['LedgerName'] = ledgerName;
+    data['Tax'] = tax;
+    data['CashDisc'] = cashDisc;
+    data['Selected'] = selected;
     return data;
   }
 }
@@ -198,12 +198,12 @@ class TAVoucher {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['LedId'] = this.ledId;
-    data['LedgerName'] = this.ledgerName;
-    data['Tax'] = this.tax;
-    data['CashDisc'] = this.cashDisc;
-    data['Selected'] = this.selected;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['LedId'] = ledId;
+    data['LedgerName'] = ledgerName;
+    data['Tax'] = tax;
+    data['CashDisc'] = cashDisc;
+    data['Selected'] = selected;
     return data;
   }
 }
@@ -220,9 +220,9 @@ class PrintArea {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['PrintAreaName'] = this.printAreaName;
-    data['PrintAreaId'] = this.printAreaId;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['PrintAreaName'] = printAreaName;
+    data['PrintAreaId'] = printAreaId;
     return data;
   }
 }
@@ -239,9 +239,9 @@ class SavedSettings {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['IdentifierKey'] = this.identifierKey;
-    data['IdentifierValue'] = this.identifierValue;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['IdentifierKey'] = identifierKey;
+    data['IdentifierValue'] = identifierValue;
     return data;
   }
 }

@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:employees/Models/SettingsSave.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import '../Models/Settings.dart';
 import '../Utils/GlobalFn.dart';
@@ -21,7 +20,6 @@ class _logsettingsState extends State<logsettings> {
   List<TAVoucher>? taVoucher;
   List<PrintArea>? printArea;
   late List<SavedSettings> savedsettings;
-
 
   //single dropdown items
   TableClass? selTableClass;
@@ -72,7 +70,7 @@ class _logsettingsState extends State<logsettings> {
     }
     if (selFirstprint != null) {
       settingsLists.add(SettingsList(
-        identifierValue: selFirstprint?.printAreaId.toString(),
+        identifierValue: selFirstprint?.printAreaName,
         identifierKey: "SETT_TAB_PA1",
       ));
     }
@@ -82,7 +80,6 @@ class _logsettingsState extends State<logsettings> {
         identifierKey: "SETT_TAB_PA2",
       ));
     }
-
     if (selThirdprint != null) {
       settingsLists.add(SettingsList(
         identifierValue: selThirdprint?.printAreaName,
@@ -101,37 +98,27 @@ class _logsettingsState extends State<logsettings> {
         identifierKey: "SETT_TAB_PA5",
       ));
     }
-    if (ipController1 != null) {
+    settingsLists.add(SettingsList(
+      identifierValue: ipController1.text,
+      identifierKey: "SETT_TAB_IP1",
+    ));
       settingsLists.add(SettingsList(
-        identifierValue: ipController1.text,
-        identifierKey: "SETT_TAB_IP1",
-      ));
-    }
-    if (ipController2 != null) {
+      identifierValue: ipController2.text,
+      identifierKey: "SETT_TAB_IP2",
+    ));
       settingsLists.add(SettingsList(
-        identifierValue: ipController2.text,
-        identifierKey: "SETT_TAB_IP2",
-      ));
-    }
-    if (ipController3 != null) {
+      identifierValue: ipController3.text,
+      identifierKey: "SETT_TAB_IP3",
+    ));
       settingsLists.add(SettingsList(
-        identifierValue: ipController3.text,
-        identifierKey: "SETT_TAB_IP3",
-      ));
-    }
-    if (ipController4 != null) {
+      identifierValue: ipController4.text,
+      identifierKey: "SETT_TAB_IP4",
+    ));
       settingsLists.add(SettingsList(
-        identifierValue: ipController4.text,
-        identifierKey: "SETT_TAB_IP4",
-      ));
-    }
-    if (ipController5 != null) {
-      settingsLists.add(SettingsList(
-        identifierValue: ipController5.text,
-        identifierKey: "SETT_TAB_IP5",
-      ));
-    }
-
+      identifierValue: ipController5.text,
+      identifierKey: "SETT_TAB_IP5",
+    ));
+  
     settingsSave.settingsList = settingsLists;
 
     var settingsSaveJson = settingsSave.toJson();
@@ -148,46 +135,140 @@ class _logsettingsState extends State<logsettings> {
 
     final response = await http.post(
       Uri.parse(apiUrl),
-      body: jsonEncode(jsonData),
+      body: (jsonData),
       headers: {'Content-Type': 'application/json'},
     );
-   // print("Complete JSON Payload sent to API: $jsonData");
     if (response.statusCode == 200) {
-     json.decode(response.body);
+      var responseData = json.decode(response.body);
+      print("API response:   $responseData");
+    } else {
+      print(
+          "Error: API request failed with status code    ${response.statusCode}");
+      print("Error response:   ${response.body}");
     }
   }
 
   Future<void> LoadSettings() async {
     await fetchData();
 
-    if (savedsettings != null && savedsettings.isNotEmpty) {
-      SavedSettings? ipController1Settings = savedsettings
-          .firstWhere((element) => element.identifierKey == "SETT_TAB_IP1",
-          orElse: () => SavedSettings());
-      SavedSettings? ipController2Settings = savedsettings
-          .firstWhere((element) => element.identifierKey == "SETT_TAB_IP2",
-          orElse: () => SavedSettings());
-      SavedSettings? ipController3Settings = savedsettings
-          .firstWhere((element) => element.identifierKey == "SETT_TAB_IP3",
-          orElse: () => SavedSettings());
-      SavedSettings? ipController4Settings = savedsettings
-          .firstWhere((element) => element.identifierKey == "SETT_TAB_IP4",
-          orElse: () => SavedSettings());
-      SavedSettings? ipController5Settings = savedsettings
-          .firstWhere((element) => element.identifierKey == "SETT_TAB_IP5",
-          orElse: () => SavedSettings());
+    if (savedsettings.isNotEmpty) {
+      if (tableClass != null && tableClass!.isNotEmpty) {
+        SavedSettings? selTableClassSettings = savedsettings.firstWhere(
+          (element) => element.identifierKey == "SETT_TAB_AREA",
+          orElse: () => SavedSettings(),
+        );
+        selTableClass = tableClass!.firstWhere(
+          (element) =>
+              element.className == selTableClassSettings.identifierValue,
+          orElse: () => tableClass!.first,
+        );
+      }
+      if (kotVoucher != null && kotVoucher!.isNotEmpty) {
+        SavedSettings? selkotVoucherSettings = savedsettings.firstWhere(
+          (element) => element.identifierKey == "SETT_TAB_KOT_LID",
+          orElse: () => SavedSettings(),
+        );
+        selKOTVoucher = kotVoucher!.firstWhere(
+          (element) => element.ledId == selkotVoucherSettings.identifierValue,
+          orElse: () => kotVoucher!.first,
+        );
+      }
+      if (taVoucher != null && taVoucher!.isNotEmpty) {
+        SavedSettings? seltaVoucherSettings = savedsettings.firstWhere(
+          (element) => element.identifierKey == "SETT_TAB_TA_LID",
+          orElse: () => SavedSettings(),
+        );
+        selTAVoucher = taVoucher!.firstWhere(
+          (element) => element.ledId == seltaVoucherSettings.identifierValue,
+          orElse: () => taVoucher!.first,
+        );
+      }
 
+      if (printArea != null && printArea!.isNotEmpty) {
+        SavedSettings? selFirstPrintSettings = savedsettings.firstWhere(
+          (element) => element.identifierKey == "SETT_TAB_PA1",
+          orElse: () => SavedSettings(),
+        );
+
+        selFirstprint = printArea!.firstWhere(
+          (element) =>
+              element.printAreaName == selFirstPrintSettings.identifierValue,
+          orElse: () => printArea!.first,
+        );
+      }
+      if (printArea != null && printArea!.isNotEmpty) {
+        SavedSettings? selSecondPrintSettings = savedsettings.firstWhere(
+          (element) => element.identifierKey == "SETT_TAB_PA2",
+          orElse: () => SavedSettings(),
+        );
+
+        selSecondprint = printArea!.firstWhere(
+          (element) =>
+              element.printAreaName == selSecondPrintSettings.identifierValue,
+          orElse: () => printArea!.first,
+        );
+      }
+      if (printArea != null && printArea!.isNotEmpty) {
+        SavedSettings? selThirdPrintSettings = savedsettings.firstWhere(
+          (element) => element.identifierKey == "SETT_TAB_PA3",
+          orElse: () => SavedSettings(),
+        );
+
+        selThirdprint = printArea!.firstWhere(
+          (element) =>
+              element.printAreaName == selThirdPrintSettings.identifierValue,
+          orElse: () => printArea!.first,
+        );
+      }
+      if (printArea != null && printArea!.isNotEmpty) {
+        SavedSettings? selFourthSettings = savedsettings.firstWhere(
+          (element) => element.identifierKey == "SETT_TAB_PA4",
+          orElse: () => SavedSettings(),
+        );
+
+        selFourthprint = printArea!.firstWhere(
+          (element) =>
+              element.printAreaName == selFourthSettings.identifierValue,
+          orElse: () => printArea!.first,
+        );
+      }
+      if (printArea != null && printArea!.isNotEmpty) {
+        SavedSettings? selFifthPrintSettings = savedsettings.firstWhere(
+          (element) => element.identifierKey == "SETT_TAB_PA5",
+          orElse: () => SavedSettings(),
+        );
+
+        selFifthprint = printArea!.firstWhere(
+          (element) =>
+              element.printAreaName == selFifthPrintSettings.identifierValue,
+          orElse: () => printArea!.first,
+        );
+      }
+      SavedSettings? ipController1Settings = savedsettings.firstWhere(
+          (element) => element.identifierKey == "SETT_TAB_IP1",
+          orElse: () => SavedSettings());
+      SavedSettings? ipController2Settings = savedsettings.firstWhere(
+          (element) => element.identifierKey == "SETT_TAB_IP2",
+          orElse: () => SavedSettings());
+      SavedSettings? ipController3Settings = savedsettings.firstWhere(
+          (element) => element.identifierKey == "SETT_TAB_IP3",
+          orElse: () => SavedSettings());
+      SavedSettings? ipController4Settings = savedsettings.firstWhere(
+          (element) => element.identifierKey == "SETT_TAB_IP4",
+          orElse: () => SavedSettings());
+      SavedSettings? ipController5Settings = savedsettings.firstWhere(
+          (element) => element.identifierKey == "SETT_TAB_IP5",
+          orElse: () => SavedSettings());
 
       setState(() {
-        ipController1.text = ipController1Settings?.identifierValue ?? "";
-        ipController2.text = ipController2Settings?.identifierValue ?? "";
-        ipController3.text = ipController3Settings?.identifierValue ?? "";
-        ipController4.text = ipController4Settings?.identifierValue ?? "";
-        ipController5.text = ipController5Settings?.identifierValue ?? "";
+        ipController1.text = ipController1Settings.identifierValue ?? "";
+        ipController2.text = ipController2Settings.identifierValue ?? "";
+        ipController3.text = ipController3Settings.identifierValue ?? "";
+        ipController4.text = ipController4Settings.identifierValue ?? "";
+        ipController5.text = ipController5Settings.identifierValue ?? "";
       });
     }
   }
-
 
   Future<void> fetchData() async {
     DeviceId = await fnGetDeviceId();
@@ -211,7 +292,7 @@ class _logsettingsState extends State<logsettings> {
             kotVoucher = settings.data?.kOTVoucher;
             taVoucher = settings.data?.tAVoucher;
             printArea = settings.data?.printArea;
-            savedsettings =settings.data!.savedSettings!;
+            savedsettings = settings.data!.savedSettings!;
 
             // Set initial values for dropdowns based on fetched data
             if (tableClass != null && tableClass!.isNotEmpty) {
@@ -240,13 +321,12 @@ class _logsettingsState extends State<logsettings> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blueGrey,
-        title: Text(
+        title: const Text(
           "Settings",
           style: TextStyle(fontSize: 22),
         ),
@@ -254,7 +334,7 @@ class _logsettingsState extends State<logsettings> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Container(
+            SizedBox(
               width: 400,
               child: Padding(
                 padding: const EdgeInsets.only(
@@ -266,7 +346,7 @@ class _logsettingsState extends State<logsettings> {
                         padding: const EdgeInsets.all(8.0),
                         child: Row(
                           children: [
-                            Column(
+                            const Column(
                               children: [
                                 Text(
                                   "Table Class",
@@ -288,7 +368,7 @@ class _logsettingsState extends State<logsettings> {
                                 ),
                               ],
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 36,
                             ),
                             Column(
@@ -349,23 +429,23 @@ class _logsettingsState extends State<logsettings> {
                           ],
                         ),
                       ),
-                      SizedBox(height: 50),
+                      const SizedBox(height: 50),
                     ],
                   ),
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               width: 100,
             ),
-            Container(
+            SizedBox(
               width: 600,
               child: Padding(
                 padding: const EdgeInsets.all(25.0),
                 child: Column(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
+                    const Padding(
+                      padding: EdgeInsets.only(right: 8.0),
                       child: Center(
                         child: Text(
                           "Print Settings",
@@ -377,9 +457,9 @@ class _logsettingsState extends State<logsettings> {
                       children: [
                         Column(
                           children: [
-                            SizedBox(height: 20),
-                            Text("Print  Area", style: TextStyle(fontSize: 21)),
-                            SizedBox(height: 20),
+                            const SizedBox(height: 20),
+                            const Text("Print  Area", style: TextStyle(fontSize: 21)),
+                            const SizedBox(height: 20),
                             DropdownButton<PrintArea>(
                               value: selFirstprint,
                               onChanged: (PrintArea? newArea) {
@@ -396,7 +476,7 @@ class _logsettingsState extends State<logsettings> {
                                 );
                               }).toList(),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 10,
                             ),
                             DropdownButton<PrintArea>(
@@ -415,7 +495,7 @@ class _logsettingsState extends State<logsettings> {
                                 );
                               }).toList(),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 10,
                             ),
                             DropdownButton<PrintArea>(
@@ -434,7 +514,7 @@ class _logsettingsState extends State<logsettings> {
                                 );
                               }).toList(),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 10,
                             ),
                             DropdownButton<PrintArea>(
@@ -453,7 +533,7 @@ class _logsettingsState extends State<logsettings> {
                                 );
                               }).toList(),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 10,
                             ),
                             DropdownButton<PrintArea>(
@@ -474,26 +554,25 @@ class _logsettingsState extends State<logsettings> {
                             ),
                           ],
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 200,
                         ),
                         Column(
                           children: [
-                            Text("Print  IP", style: TextStyle(fontSize: 21)),
-                            SizedBox(
+                            const Text("Print  IP", style: TextStyle(fontSize: 21)),
+                            const SizedBox(
                               height: 20,
                             ),
-                            Container(
+                            SizedBox(
                                 width: 200,
                                 height: 50,
                                 child: TextField(
-                                  keyboardType: TextInputType.numberWithOptions(
-                                      decimal: true,
-                                      signed: false),
+                                  keyboardType: const TextInputType.numberWithOptions(
+                                      decimal: true, signed: false),
                                   textAlignVertical: TextAlignVertical.center,
                                   controller: ipController1,
                                   decoration: InputDecoration(
-                                    contentPadding: EdgeInsets.symmetric(
+                                    contentPadding: const EdgeInsets.symmetric(
                                         vertical: 8, horizontal: 12),
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(
@@ -501,18 +580,17 @@ class _logsettingsState extends State<logsettings> {
                                     ),
                                   ),
                                 )),
-                            SizedBox(height: 5),
-                            Container(
+                            const SizedBox(height: 5),
+                            SizedBox(
                                 width: 200,
                                 height: 50,
                                 child: TextField(
-                                  keyboardType: TextInputType.numberWithOptions(
-                                      decimal: true,
-                                      signed: false),
+                                  keyboardType: const TextInputType.numberWithOptions(
+                                      decimal: true, signed: false),
                                   textAlignVertical: TextAlignVertical.center,
                                   controller: ipController2,
                                   decoration: InputDecoration(
-                                    contentPadding: EdgeInsets.symmetric(
+                                    contentPadding: const EdgeInsets.symmetric(
                                         vertical: 8, horizontal: 12),
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(
@@ -520,18 +598,17 @@ class _logsettingsState extends State<logsettings> {
                                     ),
                                   ),
                                 )),
-                            SizedBox(height: 5),
-                            Container(
+                            const SizedBox(height: 5),
+                            SizedBox(
                                 width: 200,
                                 height: 50,
                                 child: TextField(
-                                  keyboardType: TextInputType.numberWithOptions(
-                                      decimal: true,
-                                      signed: false),
+                                  keyboardType: const TextInputType.numberWithOptions(
+                                      decimal: true, signed: false),
                                   textAlignVertical: TextAlignVertical.center,
                                   controller: ipController3,
                                   decoration: InputDecoration(
-                                    contentPadding: EdgeInsets.symmetric(
+                                    contentPadding: const EdgeInsets.symmetric(
                                         vertical: 8, horizontal: 12),
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(
@@ -539,18 +616,17 @@ class _logsettingsState extends State<logsettings> {
                                     ),
                                   ),
                                 )),
-                            SizedBox(height: 5),
-                            Container(
+                            const SizedBox(height: 5),
+                            SizedBox(
                                 width: 200,
                                 height: 50,
                                 child: TextField(
-                                  keyboardType: TextInputType.numberWithOptions(
-                                      decimal: true,
-                                      signed: false),
+                                  keyboardType: const TextInputType.numberWithOptions(
+                                      decimal: true, signed: false),
                                   textAlignVertical: TextAlignVertical.center,
                                   controller: ipController4,
                                   decoration: InputDecoration(
-                                    contentPadding: EdgeInsets.symmetric(
+                                    contentPadding: const EdgeInsets.symmetric(
                                         vertical: 8, horizontal: 12),
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(
@@ -558,18 +634,17 @@ class _logsettingsState extends State<logsettings> {
                                     ),
                                   ),
                                 )),
-                            SizedBox(height: 5),
-                            Container(
+                            const SizedBox(height: 5),
+                            SizedBox(
                                 width: 200,
                                 height: 50,
                                 child: TextField(
-                                  keyboardType: TextInputType.numberWithOptions(
-                                      decimal: true,
-                                      signed: false),
+                                  keyboardType: const TextInputType.numberWithOptions(
+                                      decimal: true, signed: false),
                                   textAlignVertical: TextAlignVertical.center,
                                   controller: ipController5,
                                   decoration: InputDecoration(
-                                    contentPadding: EdgeInsets.symmetric(
+                                    contentPadding: const EdgeInsets.symmetric(
                                         vertical: 8, horizontal: 12),
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(
@@ -588,13 +663,13 @@ class _logsettingsState extends State<logsettings> {
                       },
                       style: ElevatedButton.styleFrom(
                         padding:
-                            EdgeInsets.symmetric(horizontal: 70, vertical: 8),
+                            const EdgeInsets.symmetric(horizontal: 70, vertical: 8),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(
                               3.0), // Set the radius to 0 for square edges
                         ),
                       ),
-                      child: Text(
+                      child: const Text(
                         'Save',
                         style: TextStyle(
                             fontSize: 15, fontWeight: FontWeight.bold),

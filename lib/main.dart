@@ -1,12 +1,13 @@
 import 'package:employees/Pages/Homepage.dart';
-import 'package:employees/testpage.dart';
 import 'package:flutter/material.dart';
-import 'Pages/Dashboard.dart';
-import 'Pages/LogSettings.dart';
-import 'Pages/Login.dart';
-
+import 'package:provider/provider.dart';
+import 'Models/Provider/ReorderUsingProvider.dart';
+import 'Pages/ItemsTab.dart';
+import '';
 void main() {
-  runApp(const MyApp());
+  runApp(
+    const MyApp(),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -15,14 +16,17 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+    return ChangeNotifierProvider(
+      create: (context) => SelectedItemsProvider(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
+        ),
+        home: const Homepage(),
       ),
-      home: Homepage(),
     );
   }
 }

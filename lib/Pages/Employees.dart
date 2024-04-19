@@ -59,14 +59,14 @@ class _EmployeespageState extends State<Employeespage> {
       appBar: AppBar(
         leading: BackButton(
             onPressed:() {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => Dashboardpage(),));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const Dashboardpage(),));
             },
             color: Colors.white),
         backgroundColor: Colors.blueGrey,
-        title: Text("Employees", style: TextStyle(color: Colors.white)),
+        title: const Text("Employees", style: TextStyle(color: Colors.white)),
       ),
       body: GridView.builder(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 4,
         ),
         itemCount: employees.length,
@@ -79,13 +79,14 @@ class _EmployeespageState extends State<Employeespage> {
                 MaterialPageRoute(
                   builder: (context) => Homepage(
                     employeeName: employee['EmployeeName'],
+                    employeeId:employee['EmpId']
                   ),
                 ),
               );
             },
             child: Padding(
               padding: const EdgeInsets.all(20.0),
-              child: Container(
+              child: SizedBox(
                 height: 350,
                 width: 100,
                 child: Column(
@@ -95,7 +96,7 @@ class _EmployeespageState extends State<Employeespage> {
                     // height: 80,
                     //   width: 80,
                     // ),
-                    SizedBox(height: 5,),
+                    const SizedBox(height: 5,),
                     Text(employee['EmployeeName']),
                   ],
                 ),

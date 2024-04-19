@@ -8,12 +8,14 @@ import 'package:http/http.dart' as http;
 import 'CatogoryTA.dart';
 import 'ItemsTabTA.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       home: HomeScreenTA(),
     );
   }
@@ -69,7 +71,7 @@ class _HomepageState extends State<HomeScreenTA>
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Center(child: Text('Extra Add-On')),
+          title: const Center(child: Text('Extra Add-On')),
           content: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
@@ -84,7 +86,7 @@ class _HomepageState extends State<HomeScreenTA>
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('OK'),
+              child: const Text('OK'),
             ),
           ],
         );
@@ -97,8 +99,8 @@ class _HomepageState extends State<HomeScreenTA>
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Center(child: Text('Extra Add-On')),
-          content: Column(
+          title: const Center(child: Text('Extra Add-On')),
+          content: const Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -112,7 +114,7 @@ class _HomepageState extends State<HomeScreenTA>
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('OK'),
+              child: const Text('OK'),
             ),
           ],
         );
@@ -154,7 +156,7 @@ class _HomepageState extends State<HomeScreenTA>
       }
     } catch (e) {
       print('Error: $e');
-      throw e; // Rethrow the exception to propagate it
+      rethrow; // Rethrow the exception to propagate it
     }
   }
 
@@ -196,14 +198,14 @@ class _HomepageState extends State<HomeScreenTA>
       appBar: AppBar(
         backgroundColor: Colors.blueGrey,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             int currentIndex = tabController.index;
             if (currentIndex == 0) {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => Dashboardpage(),
+                  builder: (context) => const Dashboardpage(),
                 ),
               );
             }
@@ -215,7 +217,7 @@ class _HomepageState extends State<HomeScreenTA>
           indicatorColor: Colors.white,
           unselectedLabelColor: Colors.black87,
           labelColor: Colors.white,
-          tabs: [
+          tabs: const [
             Tab(text: "CATEGORY"),
             Tab(text: "ITEMS"),
           ],
@@ -225,12 +227,12 @@ class _HomepageState extends State<HomeScreenTA>
         future: dinningData,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (snapshot.data == null ||
               snapshot.data!.data == null) {
-            return Center(child: Text('No data available'));
+            return const Center(child: Text('No data available'));
           } else {
             Dinning dinning = snapshot.data!;
             List<Tables>? tables = dinning.data?.tables;
@@ -292,10 +294,10 @@ class _HomepageState extends State<HomeScreenTA>
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 children: [
-                  SizedBox(
+                  const SizedBox(
                     height: 5,
                   ),
-                  Row(
+                  const Row(
                     children: [
                       Text(
                         "KOT:",
@@ -304,8 +306,8 @@ class _HomepageState extends State<HomeScreenTA>
                       ),
                     ],
                   ),
-                  Divider(thickness: 2, color: Colors.black87),
-                  Container(
+                  const Divider(thickness: 2, color: Colors.black87),
+                  SizedBox(
                     width: double.infinity,
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -314,10 +316,10 @@ class _HomepageState extends State<HomeScreenTA>
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Row(
+                              const Row(
                                 children: [
                                   Padding(
-                                    padding: const EdgeInsets.all(15.0),
+                                    padding: EdgeInsets.all(15.0),
                                     child: Text(
                                       "Item",
                                       style: TextStyle(
@@ -328,7 +330,7 @@ class _HomepageState extends State<HomeScreenTA>
                                   ),
                                   Spacer(),
                                   Padding(
-                                    padding: const EdgeInsets.all(15.0),
+                                    padding: EdgeInsets.all(15.0),
                                     child: Text(
                                       "Quadity",
                                       style: TextStyle(
@@ -341,7 +343,7 @@ class _HomepageState extends State<HomeScreenTA>
                                     width: 10,
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.all(15.0),
+                                    padding: EdgeInsets.all(15.0),
                                     child: Text(
                                       "Rate",
                                       style: TextStyle(
@@ -352,7 +354,7 @@ class _HomepageState extends State<HomeScreenTA>
                                   ),
                                   SizedBox(width: 30,),
                                   Padding(
-                                    padding: const EdgeInsets.all(15.0),
+                                    padding: EdgeInsets.all(15.0),
                                     child: Text(
                                       "Total",
                                       style: TextStyle(
@@ -364,7 +366,7 @@ class _HomepageState extends State<HomeScreenTA>
                                   SizedBox(width: 80),
                                 ],
                               ),
-                              Container(
+                              SizedBox(
                                 height: 280,
                                 child: ListView.builder(
                                   itemCount: selectedItemsname.length,
@@ -390,9 +392,9 @@ class _HomepageState extends State<HomeScreenTA>
                                                   "Selected itemName: $itemName");
                                               print("extraddon: $extraddon");
                                             },
-                                            child: Text("$itemName"),
+                                            child: Text(itemName),
                                           ),
-                                          Spacer(),
+                                          const Spacer(),
                                           Padding(
                                             padding: const EdgeInsets.only(
                                                 right: 70),
@@ -404,7 +406,7 @@ class _HomepageState extends State<HomeScreenTA>
                                             child: Text(rate),
                                           ),
                                           Text("$total"),
-                                          SizedBox(width: 20),
+                                          const SizedBox(width: 20),
                                           IconButton(
                                             iconSize: 30,
                                             icon: const Icon(Icons.delete),
@@ -418,23 +420,23 @@ class _HomepageState extends State<HomeScreenTA>
                                   },
                                 ),
                               ),
-                              Container(
+                              SizedBox(
                                 height: 40,
                                 child: Row(
                                   children: [
-                                    Spacer(),
-                                    Text("Total : ",
+                                    const Spacer(),
+                                    const Text("Total : ",
                                         style: TextStyle(
                                           fontSize: 20,
                                           fontWeight: FontWeight.bold,
                                         )),
-                                    SizedBox(width: 5),
+                                    const SizedBox(width: 5),
                                     Text(calculateOverallTotal().toString(),
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                           fontSize: 20,
                                           fontWeight: FontWeight.bold,
                                         )),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 80,
                                     )
                                   ],
@@ -481,20 +483,20 @@ class _HomepageState extends State<HomeScreenTA>
                             },
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 100,
                         ),
-                        Card(
+                        const Card(
                           color: Colors.black87,
                           child: Padding(
-                            padding: const EdgeInsets.all(15.0),
+                            padding: EdgeInsets.all(15.0),
                             child: Text("NOTE",
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white)),
                           ),
                         ),
-                        Spacer(),
+                        const Spacer(),
                         GestureDetector(
                           onTap: () {
                             setState(() {
@@ -502,10 +504,10 @@ class _HomepageState extends State<HomeScreenTA>
                               selectedItemrate.clear();
                             });
                           },
-                          child: Card(
+                          child: const Card(
                             color: Colors.black87,
                             child: Padding(
-                              padding: const EdgeInsets.all(15.0),
+                              padding: EdgeInsets.all(15.0),
                               child: Text(
                                 "CLEAR",
                                 style: TextStyle(
@@ -515,11 +517,11 @@ class _HomepageState extends State<HomeScreenTA>
                             ),
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 30,
                         ),
-                        Icon(Icons.print, size: 35),
-                        SizedBox(
+                        const Icon(Icons.print, size: 35),
+                        const SizedBox(
                           width: 20,
                         ),
                         GestureDetector(
@@ -528,10 +530,10 @@ class _HomepageState extends State<HomeScreenTA>
                             onTap: () {
                               //handleKOTCardTap();
                             },
-                            child: Card(
+                            child: const Card(
                               color: Colors.black87,
                               child: Padding(
-                                padding: const EdgeInsets.all(15.0),
+                                padding: EdgeInsets.all(15.0),
                                 child: Text(
                                   "   KOT  ",
                                   style: TextStyle(
@@ -542,7 +544,7 @@ class _HomepageState extends State<HomeScreenTA>
                             ),
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 20,
                         )
                       ],
@@ -572,10 +574,10 @@ class _HomepageState extends State<HomeScreenTA>
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 children: [
-                  SizedBox(
+                  const SizedBox(
                     height: 5,
                   ),
-                  Row(
+                  const Row(
                     children: [
                       Text(
                         "KOT:",
@@ -583,8 +585,8 @@ class _HomepageState extends State<HomeScreenTA>
                       ),
                     ],
                   ),
-                  Divider(thickness: 2, color: Colors.black87),
-                  Container(
+                  const Divider(thickness: 2, color: Colors.black87),
+                  SizedBox(
                     width: double.infinity,
                     child: Row(
                       children: [
@@ -592,10 +594,10 @@ class _HomepageState extends State<HomeScreenTA>
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Row(
+                              const Row(
                                 children: [
                                   Padding(
-                                    padding: const EdgeInsets.only(left: 20,right: 10,bottom: 0,top: 0),
+                                    padding: EdgeInsets.only(left: 20,right: 10,bottom: 0,top: 0),
                                     child: Text(
                                       "Item",
                                       style: TextStyle(
@@ -606,7 +608,7 @@ class _HomepageState extends State<HomeScreenTA>
                                   ),
                                   SizedBox(width: 60),
                                   Padding(
-                                    padding: const EdgeInsets.only(left: 15.0,right: 15),
+                                    padding: EdgeInsets.only(left: 15.0,right: 15),
                                     child: Text(
                                       "Rate",
                                       style: TextStyle(
@@ -616,7 +618,7 @@ class _HomepageState extends State<HomeScreenTA>
                                     ),
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.only(left: 15.0,right: 15),
+                                    padding: EdgeInsets.only(left: 15.0,right: 15),
                                     child: Text(
                                       "Total",
                                       style: TextStyle(
@@ -628,7 +630,7 @@ class _HomepageState extends State<HomeScreenTA>
                                   SizedBox(width: 18),
                                 ],
                               ),
-                              Container(
+                              SizedBox(
                                 height: 300,
                                 child: ListView.builder(
                                   itemCount: selectedItemsname.length,
@@ -653,10 +655,10 @@ class _HomepageState extends State<HomeScreenTA>
                                               children: [
                                                 Padding(
                                                   padding: const EdgeInsets.only(left:0,right: 100),
-                                                  child: Container(
+                                                  child: SizedBox(
                                                     width:200,
                                                     child: Text(
-                                                      "$itemName",
+                                                      itemName,
                                                       overflow: TextOverflow.ellipsis,
                                                     ),
                                                   ),
@@ -672,11 +674,11 @@ class _HomepageState extends State<HomeScreenTA>
                                                         child: Text("qty : $quantity"),
                                                       ),
                                                     ),
-                                                    SizedBox(width: 90,),
+                                                    const SizedBox(width: 90,),
                                                     Text(rate),
-                                                    SizedBox(width:50),
+                                                    const SizedBox(width:50),
                                                     Text("$total"),
-                                                    SizedBox(width: 10,),
+                                                    const SizedBox(width: 10,),
                                                     IconButton(
                                                       iconSize: 30,
                                                       icon: const Icon(Icons.delete),
@@ -695,13 +697,13 @@ class _HomepageState extends State<HomeScreenTA>
                                   },
                                 ),
                               ),
-                              Divider(),
-                              Container(
+                              const Divider(),
+                              SizedBox(
                                 height: 30,
                                 child: Row(
                                   children: [
-                                    Spacer(),
-                                    Text(
+                                    const Spacer(),
+                                    const Text(
                                       "Total : ",
                                       style: TextStyle(
                                         fontSize: 16,
@@ -710,12 +712,12 @@ class _HomepageState extends State<HomeScreenTA>
                                     ),
                                     Text(
                                       calculateOverallTotal().toString(),
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 70,
                                     )
                                   ],
@@ -732,7 +734,7 @@ class _HomepageState extends State<HomeScreenTA>
                       children: [
                         Row(
                           children: [
-                            Container(
+                            SizedBox(
                               height:50,
                               width: 50,
                               child: Card(
@@ -742,8 +744,8 @@ class _HomepageState extends State<HomeScreenTA>
                                 elevation: 5,
                                 child: IconButton(
                                   iconSize: 25,
-                                  icon: Center(
-                                    child: const Icon(
+                                  icon: const Center(
+                                    child: Icon(
                                       Icons.add,
                                     ),
                                   ),
@@ -753,7 +755,7 @@ class _HomepageState extends State<HomeScreenTA>
                                 ),
                               ),
                             ),
-                            Container(
+                            SizedBox(
                               height: 50,
                               width: 50,
                               child: Card(
@@ -763,8 +765,8 @@ class _HomepageState extends State<HomeScreenTA>
                                 elevation: 5,
                                 child: IconButton(
                                   iconSize: 25,
-                                  icon: Center(
-                                    child: const Icon(
+                                  icon: const Center(
+                                    child: Icon(
                                       Icons.remove,
                                     ),
                                   ),
@@ -774,7 +776,7 @@ class _HomepageState extends State<HomeScreenTA>
                                 ),
                               ),
                             ),
-                            Spacer(),
+                            const Spacer(),
                             GestureDetector(
                               onTap: () {
                                 setState(() {
@@ -782,10 +784,10 @@ class _HomepageState extends State<HomeScreenTA>
                                   selectedItemrate.clear();
                                 });
                               },
-                              child: Card(
+                              child: const Card(
                                 color: Colors.black87,
                                 child: Padding(
-                                  padding: const EdgeInsets.all(12.0),
+                                  padding: EdgeInsets.all(12.0),
                                   child: Text(
                                     "CLEAR",
                                     style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
@@ -797,16 +799,16 @@ class _HomepageState extends State<HomeScreenTA>
                         ),
                         Row(
                           children: [
-                            Card(
+                            const Card(
                               color: Colors.black87,
                               child: Padding(
-                                padding: const EdgeInsets.all(10.0),
+                                padding: EdgeInsets.all(10.0),
                                 child: Text("NOTE",
                                     style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
                               ),
                             ),
-                            Icon(Icons.print, size: 35),
-                            SizedBox(
+                            const Icon(Icons.print, size: 35),
+                            const SizedBox(
                               width: 20,
                             ),
                             GestureDetector(
@@ -815,10 +817,10 @@ class _HomepageState extends State<HomeScreenTA>
                                 onTap: () {
                                   //handleKOTCardTap();
                                 },
-                                child: Card(
+                                child: const Card(
                                   color: Colors.black87,
                                   child: Padding(
-                                    padding: const EdgeInsets.all(10.0),
+                                    padding: EdgeInsets.all(10.0),
                                     child: Text(
                                       "   KOT  ",
                                       style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
@@ -827,7 +829,7 @@ class _HomepageState extends State<HomeScreenTA>
                                 ),
                               ),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 20,
                             )
                           ],
@@ -840,21 +842,21 @@ class _HomepageState extends State<HomeScreenTA>
             ),
           ),
         ),
-        Container(
+        SizedBox(
           height: double.infinity,
           width: 600,
           child: Scaffold(
             appBar: AppBar(
               backgroundColor: Colors.blueGrey,
               leading: IconButton(
-                icon: Icon(Icons.arrow_back),
+                icon: const Icon(Icons.arrow_back),
                 onPressed: () {
                   int currentIndex = tabController.index;
                   if (currentIndex == 0) {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => Dashboardpage(),
+                        builder: (context) => const Dashboardpage(),
                       ),
                     );
                   }
@@ -877,11 +879,11 @@ class _HomepageState extends State<HomeScreenTA>
                 future: dinningData,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
+                    return const Center(child: CircularProgressIndicator());
                   } else if (snapshot.hasError) {
                     return Center(child: Text('Error: ${snapshot.error}'));
                   } else if (snapshot.data == null || snapshot.data!.data == null) {
-                    return Center(child: Text('No data available'));
+                    return const Center(child: Text('No data available'));
                   } else {
                     Dinning dinning = snapshot.data!;
                     List<Tables>? tables = dinning.data?.tables;

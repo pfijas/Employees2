@@ -6,23 +6,23 @@ class SettingsSave {
 
   SettingsSave.fromJson(Map<String, dynamic> json) {
     devideInfo = json['DevideInfo'] != null
-        ? new DeviceInfo.fromJson(json['DevideInfo']) // Corrected the typo here
+        ? DeviceInfo.fromJson(json['DevideInfo'])
         : null;
     if (json['SettingsList'] != null) {
       settingsList = <SettingsList>[];
       json['SettingsList'].forEach((v) {
-        settingsList!.add(new SettingsList.fromJson(v));
+        settingsList!.add(SettingsList.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.devideInfo != null) {
-      data['DevideInfo'] = this.devideInfo!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (devideInfo != null) {
+      data['DevideInfo'] = devideInfo!.toJson();
     }
-    if (this.settingsList != null) {
-      data['SettingsList'] = this.settingsList!.map((v) => v.toJson()).toList();
+    if (settingsList != null) {
+      data['SettingsList'] = settingsList!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -38,8 +38,8 @@ class DeviceInfo {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['DeviceId'] = this.deviceId;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['DeviceId'] = deviceId;
     return data;
   }
 }
@@ -56,9 +56,9 @@ class SettingsList {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['IdentifierKey'] = this.identifierKey;
-    data['IdentifierValue'] = this.identifierValue;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['IdentifierKey'] = identifierKey;
+    data['IdentifierValue'] = identifierValue;
     return data;
   }
 }

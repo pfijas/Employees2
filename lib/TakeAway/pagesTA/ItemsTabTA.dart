@@ -10,7 +10,7 @@ class ItemsTabTA extends StatefulWidget {
   final void Function(int?)? onCategorySelected;
   final void Function(String?, double?, int)? onItemSelected;
 
-  ItemsTabTA({
+  const ItemsTabTA({super.key, 
     required this.tabIndex,
     this.items,
     this.selectedCategoryId,
@@ -35,7 +35,7 @@ class _ItemsTabTAState extends State<ItemsTabTA> {
           .toList();
 
       return GridView.builder(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 5,
           crossAxisSpacing: 3.0,
           mainAxisSpacing: 3.0,
@@ -56,16 +56,16 @@ class _ItemsTabTAState extends State<ItemsTabTA> {
             },
             child: Card(
               elevation: 3,
-              margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               child: Padding(
-                padding: EdgeInsets.all(10),
+                padding: const EdgeInsets.all(10),
                 child: Column(
                   children: [
                     Column(
                       children: [
                         Text(
-                          '${selectedCatItems[index].name ?? ''}',
-                          style: TextStyle(
+                          selectedCatItems[index].name ?? '',
+                          style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
                           ),
@@ -81,7 +81,7 @@ class _ItemsTabTAState extends State<ItemsTabTA> {
         },
       );
     } else {
-      return CircularProgressIndicator();
+      return const CircularProgressIndicator();
     }
   }
 }

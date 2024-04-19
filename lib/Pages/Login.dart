@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart'; // Import the shared_preferences package
@@ -62,7 +61,7 @@ class _LoginPageState extends State<LoginPage> {
           jsonResponse['ResponseMessage'] == 'success') {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => Dashboardpage()),
+          MaterialPageRoute(builder: (context) => const Dashboardpage()),
         );
       } else {
         print(
@@ -80,37 +79,37 @@ class _LoginPageState extends State<LoginPage> {
       builder: (BuildContext context) {
         return Dialog(
           child: Container(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
+                const Text(
                   'Settings',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 TextField(
                   controller: urlController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Enter URL',
                     contentPadding: EdgeInsets.all(8),
                   ),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 TextField(
                   controller: IdController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Enter Device id ',
                     contentPadding: EdgeInsets.all(8),
                   ),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 ElevatedButton(
                   onPressed: () {
                     _saveUrlAndIdToLocal(urlController.text,IdController.text); // Save the URL to local storage
                     Navigator.pop(context); // Close the settings menu
                   },
-                  child: Text('Save'),
+                  child: const Text('Save'),
                 ),
               ],
             ),
@@ -131,7 +130,7 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blueGrey,
-        title: Text('Login Page'),
+        title: const Text('Login Page'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -140,43 +139,43 @@ class _LoginPageState extends State<LoginPage> {
           children: [
             TextField(
               controller: emailController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Email',
                 hintText: 'Enter your email',
               ),
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             TextField(
               controller: passwordController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Password',
                 hintText: 'Enter your password',
               ),
               obscureText: true,
             ),
-            SizedBox(height: 32.0),
+            const SizedBox(height: 32.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Center(
-                  child: Container(
+                  child: SizedBox(
                     width: 300,
                     child: ElevatedButton(
                       onPressed: _login,
-                      child: Text('Login',style: TextStyle(color: Colors.white)),
                       style: ButtonStyle(
                         backgroundColor: MaterialStateProperty.all<Color>(Colors.blueGrey), // Change color to your preferred color
                       ),
+                      child: const Text('Login',style: TextStyle(color: Colors.white)),
                     ),
                   ),
                 ),
-                SizedBox(width: 40),
+                const SizedBox(width: 40),
                 Center(
                   child: InkWell(
                     onTap: () {
                       _showSettingsMenu(context);
                     },
-                    child: Column(
+                    child: const Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(

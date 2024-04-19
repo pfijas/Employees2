@@ -1,591 +1,290 @@
+
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../Models/Dinning.dart';
+import '../Models/Provider/ReorderUsingProvider.dart';
+import '../Utils/GlobalFn.dart';
 
 class TablesTab extends StatefulWidget {
   final int tabIndex;
   final List<Tables>? tables;
-  final void Function(String?, double?)? ontablenamesel;
-
-  TablesTab({required this.tabIndex, this.tables, this.ontablenamesel, required TabController tabController});
+  final TabController tabController;
+  final List<OrderList>? orderList;
+  final void Function(Map<String, Set<String>>)? onSavePressed;
+  final void Function(String tableName, Set<String> seats, String tableId)?
+  onClosePressed;
+  final void Function(String tableName, Set<String> seats)?
+  onSelectionChanged; // Callback to send selected data to parent widget
+  const TablesTab({
+    super.key,
+    required this.tabIndex,
+    required this.orderList,
+    this.tables,
+    required this.tabController,
+    this.onSavePressed,
+    this.onClosePressed,
+    this.onSelectionChanged, // Initialize callback
+  });
 
   @override
-  _MyTabContentState createState() => _MyTabContentState();
+  _TablesTabState createState() => _TablesTabState();
 }
 
-class _MyTabContentState extends State<TablesTab> {
-  Map<String, List<String>> selectedSeatsMap = {};
+class _TablesTabState extends State<TablesTab> {
+  Map<String, Set<String>> selectedSeatsMap = {};
+  String? DeviceId = "";
 
   @override
   Widget build(BuildContext context) {
-    if (widget.tabIndex == 0) {
-      return GridView.builder(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 5,
-          crossAxisSpacing: 4.0,
-          mainAxisSpacing: 4.0,
-        ),
-        itemCount: widget.tables?.length ?? 0,
-        itemBuilder: (context, index) {
-          Color cardColor;
-          switch (widget.tables?[index].tableStatus) {
-            case 'Free':
-              cardColor = Colors.green;
-              break;
-            case 'Full':
-              cardColor = Colors.red;
-              break;
-            case 'Seated':
-              cardColor = Colors.yellow;
-              break;
-            default:
-              cardColor = Colors.white;
-          }
+    return widget.tabIndex == 0
+        ? _buildTablesGrid()
+        : Text("Content for Tab ${widget.tabIndex}");
+  }
 
-          int? capacity = widget.tables?[index].chair;
+  Widget _buildTablesGrid() {
+    return GridView.builder(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 5,
+        crossAxisSpacing: 4.0,
+        mainAxisSpacing: 4.0,
+      ),
+      itemCount: widget.tables?.length ?? 0,
+      itemBuilder: (context, index) {
+        final table = widget.tables?[index];
+        return _buildTableCard(table);
+      },
+    );
+  }
 
-          // Determine which design to use based on the capacity
-          Widget design;
-          if (capacity == 1) {
-            design = Design1person(onSeatsSelected: (seats) {
-              selectedSeatsMap[widget.tables![index].tableName!] = seats;
-            });
-          } else if (capacity == 2) {
-            design = Design2persons(onSeatsSelected: (seats) {
-              selectedSeatsMap[widget.tables![index].tableName!] = seats;
-            });
-          } else if (capacity == 4) {
-            design = Design4persons(
-              onSeatsSelected: (seats) {
-                selectedSeatsMap[widget.tables![index].tableName!] = seats;
-              },
-            );
-          } else if (capacity == 6) {
-            design = Design6persons(onSeatsSelected: (seats) {
-              selectedSeatsMap[widget.tables![index].tableName!] = seats;
-            });
-          } else {
-            // Default design for other capacities
-            design = DefaultDesign();
-          }
-
-          return
-            Container(
-            height: 600,
-            child: Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(4.0),
-              ),
-              elevation: 5,
-              margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              child: Padding(
-                padding: EdgeInsets.all(10),
-                child: Column(
-                  children: [
-                    Center(
-                      child: Text(
-                        '${widget.tables?[index].tableName ?? ''}',
-                        style:
-                            TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    Center(
-                        child: Text('Capacity: ${widget.tables?[index].chair}',style:
-                        TextStyle(fontSize: 12, fontWeight: FontWeight.bold),)),
-                    Center(child: Text('Guest: ${widget.tables?[index].guest}',style:
-                    TextStyle(fontSize: 12, fontWeight: FontWeight.bold),)),
-                    Container(
-                      width: double.infinity,
-                      height: 25,
-                      child: InkWell(
-                        onTap: () {
-                          _buildPopupDialog(
-                            context,
-                            widget.tables?[index],
-                            design,
-                            selectedSeatsMap[widget.tables![index].tableName!],
-                          );
-                        },
-                        child: Card(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(4.0),
-                            ),
-                            color: cardColor,
-                            child: Center(
-                                child: Text(
-                                    '${widget.tables?[index].tableStatus}',style:
-                                TextStyle(fontSize: 12, fontWeight: FontWeight.bold),))),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        },
+  Future<void> loadAPISeats() async {
+    try {
+      String? baseUrl = await fnGetBaseUrl();
+      String apiUrl = '$baseUrl/api/Dinein/alldata?DeviceId=$DeviceId';
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {'Content-Type': 'application/json'},
       );
-    } else {
-      return Text("Content for Tab ${widget.tabIndex}");
+      if (response.statusCode == 200) {
+        final jsonResponse = json.decode(response.body);
+        final orderList = jsonResponse['Data']['OrderList'];
+        print('OrderList from API: $orderList');
+      } else {
+        print(
+            'Failed to fetch order list from API. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error: $e');
     }
   }
 
-  void _buildPopupDialog(BuildContext context, Tables? selectedTable,
-      Widget design, List<String>? selectedSeats) {
-    selectedSeats ??= [];
+  @override
+  void initState() {
+    super.initState();
+    selectedSeatsMap.clear();
+  }
 
+  Widget _buildTableCard(Tables? table) {
+    final cardColor = _getTableStatusColor(table?.tableStatus ?? '');
+    final List<OrderList>? orderList = widget.orderList;
+
+    return SizedBox(
+      height: 1000,
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(4.0),
+        ),
+        elevation: 5,
+        margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            children: [
+              Text(
+                table?.tableName ?? '',
+                style:
+                const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+              ),
+              Text(
+                'TableId: ${table?.tableId ?? ''}', // Display TableId
+                style:
+                const TextStyle(fontSize: 6, fontWeight: FontWeight.w100),
+              ),
+              Text(
+                'Capacity: ${table?.chair}',
+                style:
+                const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+              ),
+              Text(
+                'Guest: ${table?.guest}',
+                style:
+                const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+              ),
+              _buildStatusButton(table, cardColor),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatusButton(Tables? table, Color cardColor) {
+    return InkWell(
+      onTap: () => _buildPopupDialog(context, table),
+      child: SizedBox(
+        width: double.infinity,
+        height: 25,
+        child: Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(4.0),
+          ),
+          color: cardColor,
+          child: Center(
+            child: Text(
+              '${table?.tableStatus}',
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Color _getTableStatusColor(String status) {
+    switch (status) {
+      case 'Free':
+        return Colors.green;
+      case 'Full':
+        return Colors.red;
+      case 'Seated':
+        return Colors.yellow;
+      default:
+        return Colors.white;
+    }
+  }
+
+  void _buildPopupDialog(BuildContext context, Tables? table) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(selectedTable?.tableName ?? ''),
-          content: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              design,
-            ],
+          title: Text(
+              '${table?.tableName ?? 'Select Seats'} - Table ID: ${table?.tableId ?? 'Unknown'}'),
+          content: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setDialogState) {
+              return SingleChildScrollView(
+                child: Column(
+                  children: List.generate(table?.chair ?? 0, (index) {
+                    String seatName = 'S${index + 1}';
+                    final String tableName = table?.tableName ?? 'Unknown table';
+                    final String tableId = table?.tableId?.toString() ?? 'Unknown table';
+                    bool isSelected = selectedSeatsMap[tableName]?.contains(seatName) ?? false;
+                    // Check if orderList contains an order with matching tableName
+                    bool CheckSeats = widget.orderList?.any((order) => order.tableName == tableName) ?? false;
+                    // Determine which image to display based on ChairIdList presence
+                    bool isSeatBooked = CheckSeats && widget.orderList!.any((order) => order.tableName == tableName && order.chairIdList!.contains(seatName));
+
+                    String imagePath = isSeatBooked ? 'assets/images/Bookedseat.jpg' : 'assets/images/notbookedseat.jpg';
+
+                    return GestureDetector(
+                      onTap: () {
+                        setDialogState(() {
+                          // Check if the seat is already booked for this tableName
+                          bool isSeatBooked = widget.orderList?.any((order) =>
+                          order.tableName == tableName &&
+                              order.chairIdList != null &&
+                              order.chairIdList!.contains(seatName)) ??
+                              false;
+
+                          // Only proceed with seat selection/unselection if it's not part of a booked order
+                          if (!isSeatBooked) {
+                            bool isSelected = selectedSeatsMap[tableName]?.contains(seatName) ?? false;
+                            if (isSelected) {
+                              selectedSeatsMap[tableName]?.remove(seatName);
+                              selectedSeatsMap[tableId]?.remove; // Remove from tableId map too
+                            } else {
+                              selectedSeatsMap[tableName] ??= Set<String>();
+                              selectedSeatsMap[tableName]?.add(seatName);
+                              selectedSeatsMap[tableId] ??= Set<String>();
+                              selectedSeatsMap[tableId]?.add; // Add to tableId map too
+                            }
+                            // Notify parent widget about selection change
+                            if (widget.onSelectionChanged != null) {
+                              widget.onSelectionChanged!(tableName, selectedSeatsMap[tableName] ?? {});
+                            }
+                          }
+                          setState(() {
+                          print("Selected Seats: $selectedSeatsMap");
+                            if(widget.onSavePressed!=null){
+                              widget.onSavePressed!(selectedSeatsMap);
+                            }
+                            Provider.of<SelectedItemsProvider>(context,listen: false)
+                            .updateSelectedSeatsMap(selectedSeatsMap);
+                          });
+                          // Print updated selectedSeatsMap with tableId included
+                          print("Selected Seats: $selectedSeatsMap");
+                        });
+                      },
+
+
+                      child:Container(
+                        height: 50,
+                        width: 50,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage(
+                              (isSelected || isSeatBooked)
+                                  ? 'assets/images/Bookedseat.jpg'
+                                  : 'assets/images/notbookedseat.jpg',
+                            ),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+
+                    );
+                  }),
+                ),
+              );
+            },
           ),
-          actions: [
+          actions: <Widget>[
             TextButton(
+              child: const Text('Close'),
               onPressed: () {
-                Navigator.pop(context); // Close the dialog
+                setState(() {
+                  final String tableName = table?.tableName ?? 'Unknown table';
+                  final String tableId = table?.tableId?.toString() ?? 'Unknown table';
+                  if (widget.onClosePressed != null) {
+                    widget.onClosePressed!(
+                      tableName,
+                      selectedSeatsMap[tableName] ?? {},
+                      tableId,
+                    );
+                  }
+                  selectedSeatsMap.remove(tableName);
+                  selectedSeatsMap.remove(tableId);
+                });
+                Navigator.of(context).pop();
               },
-              child: Text('Close'),
             ),
             TextButton(
+              child: const Text('Save'),
               onPressed: () {
-                // Do something with selectedTable and selectedSeats
-                print("Selected Table: ${selectedTable?.tableName}");
-                print("Selected Seats: ${selectedSeats?.join(', ')}");
-
-                Navigator.pop(context);
+                setState(() {
+                  print("Selected Seats: $selectedSeatsMap");
+                  if (widget.onSavePressed != null) {
+                    widget.onSavePressed!(selectedSeatsMap);
+                  }
+                });
+                Navigator.of(context).pop();
+                widget.tabController.animateTo(widget.tabIndex + 1);
               },
-              child: Text('Save'),
             ),
           ],
         );
       },
-    );
-  }
-}
-
-class Design1person extends StatefulWidget {
-  final void Function(List<String>) onSeatsSelected;
-
-  Design1person({required this.onSeatsSelected});
-
-  @override
-  _Design1personState createState() => _Design1personState();
-}
-
-class _Design1personState extends State<Design1person> {
-  List<String> seatStatus1 = ['assets/images/notbookedseat.jpg'];
-  List<String> selectedSeats = [];
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Container(
-        width: 200,
-        height: 150,
-        child: Column(
-          children: [
-            GestureDetector(
-              onTap: () {
-                _updateSeatStatus(0);
-              },
-              child: Column(
-                children: [
-                  Image.asset(
-                    seatStatus1[0],
-                    width: 40,
-                    height: 40,
-                  ),
-                ],
-              ),
-            ),
-            Spacer(),
-            Container(
-              width: 150,
-              height: 60,
-              child: Card(
-                child: Center(child: Text("Table")),
-              ),
-            ),
-            Spacer(),
-            Text(
-              "Seat: ${selectedSeats.join(', ')}",
-              style: TextStyle(fontSize: 20),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _updateSeatStatus(int seatIndex) {
-    setState(() {
-      if (seatStatus1[seatIndex] == 'assets/images/notbookedseat.jpg') {
-        seatStatus1[seatIndex] = 'assets/images/Bookedseat.jpg';
-        selectedSeats.add("S${seatIndex + 1}");
-      } else {
-        seatStatus1[seatIndex] = 'assets/images/notbookedseat.jpg';
-        selectedSeats.remove("S${seatIndex + 1}");
-      }
-      widget.onSeatsSelected(selectedSeats);
-    });
-  }
-}
-
-class Design2persons extends StatefulWidget {
-  final void Function(List<String>) onSeatsSelected;
-
-  Design2persons({required this.onSeatsSelected});
-
-  @override
-  _Design2personsState createState() => _Design2personsState();
-}
-
-class _Design2personsState extends State<Design2persons> {
-  List<String> seatStatus2 = [
-    'assets/images/notbookedseat.jpg',
-    'assets/images/notbookedseat.jpg',
-  ];
-  List<String> selectedSeats = [];
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Container(
-        width: 200,
-        height: 250,
-        child: Column(
-          children: [
-            GestureDetector(
-              onTap: () {
-                _updateSeatStatus(0);
-              },
-              child: Image.asset(
-                seatStatus2[0],
-                width: 40,
-                height: 40,
-              ),
-            ),
-            Spacer(),
-            Container(
-              width: 150,
-              height: 60,
-              child: Card(
-                child: Center(child: Text("Table")),
-              ),
-            ),
-            Spacer(),
-            GestureDetector(
-              onTap: () {
-                _updateSeatStatus(1);
-              },
-              child: Image.asset(
-                seatStatus2[1],
-                width: 40,
-                height: 40,
-              ),
-            ),
-            SizedBox(height: 10),
-            Text(
-              "Seat: ${selectedSeats.join(', ')}",
-              style: TextStyle(fontSize: 20),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _updateSeatStatus(int seatIndex) {
-    setState(() {
-      if (seatStatus2[seatIndex] == 'assets/images/notbookedseat.jpg') {
-        seatStatus2[seatIndex] = 'assets/images/Bookedseat.jpg';
-        selectedSeats.add("S${seatIndex + 1}");
-      } else {
-        seatStatus2[seatIndex] = 'assets/images/notbookedseat.jpg';
-        selectedSeats.remove("S${seatIndex + 1}");
-      }
-    });
-    widget.onSeatsSelected(selectedSeats);
-  }
-}
-
-class Design4persons extends StatefulWidget {
-  final void Function(List<String>) onSeatsSelected;
-
-  Design4persons({required this.onSeatsSelected});
-
-  @override
-  _Design4personsState createState() => _Design4personsState();
-}
-
-class _Design4personsState extends State<Design4persons> {
-  List<String> seatStatus4 = [
-    'assets/images/notbookedseat.jpg',
-    'assets/images/notbookedseat.jpg',
-    'assets/images/notbookedseat.jpg',
-    'assets/images/notbookedseat.jpg',
-  ];
-  List<String> selectedSeats = [];
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Container(
-        width: 200,
-        height: 250,
-        child: Column(
-          children: [
-            _buildSeatRow(
-              0,
-            ),
-            Spacer(),
-            Container(
-              width: 250,
-              height: 60,
-              child: Card(
-                child: Center(child: Text("Table")),
-              ),
-            ),
-            Spacer(),
-            _buildSeatRow(
-              2,
-            ),
-            SizedBox(height: 10),
-            Text(
-              "Seat: ${selectedSeats.join(', ')}",
-              style: TextStyle(fontSize: 20),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSeatRow(int startIndex) {
-    return Row(
-      children: [
-        Spacer(),
-        Expanded(
-          child: GestureDetector(
-            onTap: () {
-              _updateSeatStatus(startIndex);
-            },
-            child: Column(
-              children: [
-                Image.asset(
-                  seatStatus4[startIndex],
-                  width: 40,
-                  height: 40,
-                ),
-                Text("${startIndex + 1}")
-              ],
-            ),
-          ),
-        ),
-        SizedBox(
-          width: 50,
-        ),
-        Expanded(
-          child: GestureDetector(
-            onTap: () {
-              _updateSeatStatus(startIndex + 1);
-            },
-            child: Column(
-              children: [
-                Image.asset(
-                  seatStatus4[startIndex + 1],
-                  width: 40,
-                  height: 40,
-                ),
-                Text("${startIndex + 2}")
-              ],
-            ),
-          ),
-        ),
-        Spacer(),
-      ],
-    );
-  }
-
-  void _updateSeatStatus(int seatIndex) {
-    final seatNumber = "S${seatIndex + 1}";
-
-    setState(() {
-      if (seatStatus4[seatIndex] == 'assets/images/notbookedseat.jpg') {
-        seatStatus4[seatIndex] = 'assets/images/Bookedseat.jpg';
-        selectedSeats.add(seatNumber);
-      } else {
-        seatStatus4[seatIndex] = 'assets/images/notbookedseat.jpg';
-        selectedSeats.remove(seatNumber);
-      }
-    });
-    final sortedSeats = List<String>.from(selectedSeats)..sort();
-    widget.onSeatsSelected(sortedSeats);
-  }
-}
-
-class Design6persons extends StatefulWidget {
-  final void Function(List<String>) onSeatsSelected;
-
-  Design6persons({required this.onSeatsSelected});
-
-  @override
-  _Design6personsState createState() => _Design6personsState();
-}
-
-class _Design6personsState extends State<Design6persons> {
-  List<String> seatStatus6 = [
-    'assets/images/notbookedseat.jpg',
-    'assets/images/notbookedseat.jpg',
-    'assets/images/notbookedseat.jpg',
-    'assets/images/notbookedseat.jpg',
-    'assets/images/notbookedseat.jpg',
-    'assets/images/notbookedseat.jpg',
-  ];
-  List<String> selectedSeats = [];
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 200,
-      height: 240,
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Spacer(),
-              GestureDetector(
-                onTap: () {
-                  _updateSeatSelected(0);
-                },
-                child: Image.asset(
-                  seatStatus6[0],
-                  width: 40,
-                  height: 40,
-                ),
-              ),
-              SizedBox(
-                width: 20,
-              ),
-              GestureDetector(
-                onTap: () {
-                  _updateSeatSelected(1);
-                },
-                child: Image.asset(
-                  seatStatus6[1],
-                  width: 40,
-                  height: 40,
-                ),
-              ),
-              SizedBox(
-                width: 20,
-              ),
-              GestureDetector(
-                onTap: () {
-                  _updateSeatSelected(2);
-                },
-                child: Image.asset(
-                  seatStatus6[2],
-                  width: 40,
-                  height: 40,
-                ),
-              ),
-              Spacer(),
-            ],
-          ),
-          Spacer(),
-          Container(
-            width: 250,
-            height: 60,
-            child: Card(
-              child: Center(child: Text("Table")),
-            ),
-          ),
-          Spacer(),
-          Row(
-            children: [
-              Spacer(),
-              GestureDetector(
-                onTap: () {
-                  _updateSeatSelected(3);
-                },
-                child: Image.asset(
-                  seatStatus6[3],
-                  width: 40,
-                  height: 40,
-                ),
-              ),
-              SizedBox(
-                width: 20,
-              ),
-              GestureDetector(
-                onTap: () {
-                  _updateSeatSelected(4);
-                },
-                child: Image.asset(
-                  seatStatus6[4],
-                  width: 40,
-                  height: 40,
-                ),
-              ),
-              SizedBox(
-                width: 20,
-              ),
-              GestureDetector(
-                onTap: () {
-                  _updateSeatSelected(5);
-                },
-                child: Image.asset(
-                  seatStatus6[5],
-                  width: 40,
-                  height: 40,
-                ),
-              ),
-              Spacer(),
-            ],
-          ),
-          SizedBox(height: 10),
-          Text(
-            "Seat: ${selectedSeats.join(', ')}",
-            style: TextStyle(fontSize: 20),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _updateSeatSelected(int seatIndex) {
-    setState(() {
-      if (seatStatus6[seatIndex] == 'assets/images/notbookedseat.jpg') {
-        seatStatus6[seatIndex] = 'assets/images/Bookedseat.jpg';
-        selectedSeats.add("S${seatIndex + 1}");
-      } else {
-        seatStatus6[seatIndex] = 'assets/images/notbookedseat.jpg';
-        selectedSeats.remove("S${seatIndex + 1}");
-      }
-    });
-    widget.onSeatsSelected(selectedSeats);
-  }
-}
-
-class DefaultDesign extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.grey,
-      width: 100,
-      height: 100,
-      child: Center(
-        child: Text('Empty.....'),
-      ),
     );
   }
 }

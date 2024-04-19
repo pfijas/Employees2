@@ -9,7 +9,7 @@ class CategoryTabTA extends StatefulWidget {
   int? selectedCategoryId;
   final void Function(int?)? onCategorySelected; // Add this line
 
-  CategoryTabTA({
+  CategoryTabTA({super.key, 
     required this.category,
     required this.tabIndex,
     required this.tabController,
@@ -29,7 +29,7 @@ class _CategoryTabTAState extends State<CategoryTabTA> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: GridView.builder(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 4,
           crossAxisSpacing: 8,
           mainAxisSpacing: 8,
@@ -49,9 +49,9 @@ class _CategoryTabTAState extends State<CategoryTabTA> {
             },
             child: Card(
               elevation: 3,
-              margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               child: Padding(
-                padding: EdgeInsets.all(10),
+                padding: const EdgeInsets.all(10),
                 child: Column(
                   children: [
                     Column(
@@ -63,8 +63,8 @@ class _CategoryTabTAState extends State<CategoryTabTA> {
                         Container(
                           child: Text(
                             //overflow: TextOverflow.ellipsis,
-                            '$itemName',
-                            style: TextStyle(
+                            itemName,
+                            style: const TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.bold,
                             ),
